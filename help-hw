@@ -1,7 +1,15 @@
 #!/bin/bash
 
 clear
-Help_RUN=$(whiptail --title "HW-Helper" --menu "\n選択してください" 0 0 0 --ok-button "" --cancel-button "" --notags 'journalctl -k --no-pager' "dmesg" 'lspci' "lspci" 'lsusb' "lsusb" 3>&1 1>&2 2>&3)
+if [ ! $(command -v whiptail) ]; then
+  if [ $(id -u) != 0 ]; then SUDO="sudo "; fi
+  echo -e "\n\n必須ソフトウェアが削除されているため､\n\"help-hw\" の実行に失敗しました｡\n\n"
+  echo -e "解決するには？\n"
+  echo -e "${SUDO}apt install -y whiptail\n\n上記のコマンドをインターネットに接続されている環境で実行します\n"
+  exit 1
+fi
+Help_RUN=$(whiptail --title "HW-Helper" --menu "\n選択してください" 0 0 0 --ok-button "選択" --cancel-button "終了" --notags 'journalctl -k --no-pager' "dmesg" 'lspci' "lspci" 'lsusb' "lsusb" 3>&1 1>&2 2>&3)
+if [ $? != 0 ]; then exit 1; fi
 declare -A Help_MSG=(["journalctl -k --no-pager"]="dmesg" ["lspci"]="lspci" ["lsusb"]="lsusb")
 Help_OUT=$(whiptail --title "HW-Helper" --yesno "\nファイルに出力しますか？" 0 0 --yes-button "する" --no-button "しない" --defaultno 3>&1 1>&2 2>&3)
 if [ $? == 0 ]; then
@@ -10,9 +18,6 @@ if [ $? == 0 ]; then
   if [ $? == 0 ]; then
     echo -e "\nログは \"$Help_LOG\" としてファイルに保存されました｡\n"
     exit 0
-#  elif [ "${Help_OUT[Help_RUN]}" == "dmesg" ] && [ $? != 0 ]; then
-#    echo -e "\n表示するエントリが存在しませんでした｡\n"
-#    exit 0
   else
     echo -e "\n書込権限不足等の理由でファイルを書き込めませんでした｡\n"
     exit 1

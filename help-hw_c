@@ -12,10 +12,8 @@ echo  "  1. dmesg"
 echo  "  2. lspci"
 echo  "  3. lsusb"
 echo
-
 echo -n "番号を数字で入力して下さい: "
 read -r chk_type
-
 clear
 if [[ $chk_type == 1 ]] || [[ "$chk_type" == "１" ]]; then
   echo -e "\"journalctl -k --no-pager\" を実行します\n"
