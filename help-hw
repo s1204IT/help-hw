@@ -1,0 +1,24 @@
+#!/bin/bash
+
+clear
+Help_RUN=$(whiptail --title "HW-Helper" --menu "\n選択してください" 0 0 0 --ok-button "" --cancel-button "" --notags 'journalctl -k --no-pager' "dmesg" 'lspci' "lspci" 'lsusb' "lsusb" 3>&1 1>&2 2>&3)
+declare -A Help_MSG=(["journalctl -k --no-pager"]="dmesg" ["lspci"]="lspci" ["lsusb"]="lsusb")
+Help_OUT=$(whiptail --title "HW-Helper" --yesno "\nファイルに出力しますか？" 0 0 --yes-button "する" --no-button "しない" --defaultno 3>&1 1>&2 2>&3)
+if [ $? == 0 ]; then
+  Help_LOG="Help-HW_${Help_MSG[$Help_RUN]}_$(date +%F-%H-%M-%S).log"
+  $Help_RUN|tee -a $Help_LOG 2>/dev/null
+  if [ $? == 0 ]; then
+    echo -e "\nログは \"$Help_LOG\" としてファイルに保存されました｡\n"
+    exit 0
+#  elif [ "${Help_OUT[Help_RUN]}" == "dmesg" ] && [ $? != 0 ]; then
+#    echo -e "\n表示するエントリが存在しませんでした｡\n"
+#    exit 0
+  else
+    echo -e "\n書込権限不足等の理由でファイルを書き込めませんでした｡\n"
+    exit 1
+  fi
+else
+  $Help_RUN
+  echo
+  exit 0
+fi
