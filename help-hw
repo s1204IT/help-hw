@@ -16,6 +16,9 @@ if [ $? == 0 ]; then
   Help_LOG="Help-HW_${Help_MSG[$Help_RUN]}_$(date +%F-%H-%M-%S).log"
   $Help_RUN|tee -a $Help_LOG 2>/dev/null
   if [ $? == 0 ]; then
+    echo -e "\n\nCPU Info\n\n$(lscpu)">>$Help_LOG
+    echo -e "\n\nRAM Info\n$(free -h)">>$Help_LOG
+    echo -e "\n\nStorage Info\n\n$(df -h)">>$Help_LOG
     echo -e "\nログは \"$Help_LOG\" としてファイルに保存されました｡\n"
     exit 0
   else
