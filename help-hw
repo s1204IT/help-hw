@@ -79,7 +79,7 @@ case $1 in
     ;;
   --missing-popt)
     echo -e "※ エラーが発生したため､ もう一度選択してください"
-    Help_CLI
+    Help_CUI
     ;;
   *)
     Help_GUI
