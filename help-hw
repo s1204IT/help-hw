@@ -28,7 +28,7 @@ function Help_GUI() {
     exit 1
   fi
   Help_RUN=$(whiptail --title "HW-Helper" --menu "\n選択してください" 0 0 0 --ok-button "選択" --cancel-button "終了" --notags 'journalctl -k --no-pager' "dmesg" 'lspci' "lspci" 'lsusb' "lsusb" 3>&1 1>&2 2>&3)
-  if [ $? != 0 ]; then exit 1; fi
+  if [ $? == 134 ]; then $(basename $0) --missing-popt; exit 0; fi
   whiptail --title "HW-Helper" --yesno "\nファイルに出力しますか？" 0 0 --yes-button "する" --no-button "しない" --defaultno 3>&1 1>&2 2>&3
   if [ $? == 0 ]; then
     Help_OUT
@@ -51,7 +51,7 @@ function Help_CUI() {
   echo  "  2. lspci"
   echo  "  3. lsusb"
   echo
-  echo -n "番号を数字で入力して下さい: "
+  echo -n "番号を半角数字で入力して下さい: "
   read -n 1 -r Help_NUM
   if [[ ! $Help_NUM =~ ^[1-3]+$ ]]; then clear; exit 1; fi
   declare -A Help_SET=([1]="journalctl -k --no-pager" [2]="lspci" [3]="lsusb")
@@ -74,12 +74,16 @@ function Help_CUI() {
 declare -A Help_MSG=(["journalctl -k --no-pager"]="dmesg" ["lspci"]="lspci" ["lsusb"]="lsusb")
 
 case $1 in
-  c|-c)
-  Help_CUI
-  ;;
+  -c)
+    Help_CUI
+    ;;
+  --missing-popt)
+    echo -e "※ エラーが発生したため､ もう一度選択してください"
+    Help_CLI
+    ;;
   *)
-  Help_GUI
-  ;;
+    Help_GUI
+    ;;
 esac
 
 exit 0
